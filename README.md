@@ -75,13 +75,4 @@ Para correr el proyecto en tu entorno local:
    ```
 
 ---
-
-## ☁️ Despliegue en Vercel
-
-1. Ingresá a [Vercel](https://vercel.com/) e inicia sesión con tu cuenta de GitHub.
-2. Hacé clic en **Add New -> Project**.
-3. Importá el repositorio `mercadolibrepro`.
-4. Hacé clic en **Deploy**. ¡El proyecto estará en línea en un minuto!
-
----
 Desarrollado con fines de portafolio por **Agustin Pollan**.
