@@ -15,6 +15,7 @@ export interface Product {
   description: string;
   category: string;
   image: string;
+  images?: string[]; // Multiple high-res image angles
   rating: number;
   reviewsCount: number;
   stock: number;

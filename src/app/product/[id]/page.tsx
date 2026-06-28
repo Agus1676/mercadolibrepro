@@ -15,6 +15,9 @@ export default function ProductDetailPage() {
 
   const { products, addToCart, addQuestionToProduct, user, toggleFavorite, isFavorite, isMounted } = useApp();
   const [product, setProduct] = useState<any>(null);
+  const [activeImage, setActiveImage] = useState('');
+  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+  const [galleryIndex, setGalleryIndex] = useState(0);
   
   const favorited = product ? isFavorite(product.id) : false;
   const [quantity, setQuantity] = useState(1);
@@ -32,8 +35,20 @@ export default function ProductDetailPage() {
     const found = products.find((p) => p.id === id);
     if (found) {
       setProduct(found);
+      setActiveImage(found.image);
+      setGalleryIndex(0);
     }
   }, [id, products, isMounted]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsGalleryOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   if (!isMounted) return null;
 
@@ -81,13 +96,13 @@ export default function ProductDetailPage() {
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!imageRef.current) return;
+    if (!imageRef.current || !product) return;
     const { left, top, width, height } = imageRef.current.getBoundingClientRect();
     const x = ((e.clientX - left) / width) * 100;
     const y = ((e.clientY - top) / height) * 100;
     setZoomStyle({
       display: 'block',
-      backgroundImage: `url(${product.image})`,
+      backgroundImage: `url(${activeImage || product.image})`,
       backgroundPosition: `${x}% ${y}%`,
       backgroundSize: '200%'
     });
@@ -118,34 +133,51 @@ export default function ProductDetailPage() {
               <div className="flex flex-col md:flex-row gap-6">
                 
                 {/* Image Area */}
-                <div className="w-full md:w-[62%] flex flex-col gap-4">
-                  <div 
-                    className="relative h-[400px] w-full border border-slate-200/60 rounded-2xl bg-white p-2 flex items-center justify-center cursor-zoom-in overflow-hidden"
-                    onMouseMove={handleMouseMove}
-                    onMouseLeave={handleMouseLeave}
-                  >
-                    <img
-                      ref={imageRef}
-                      src={product.image}
-                      alt={product.title}
-                      className="object-contain max-h-full max-w-full"
-                    />
-                    <div 
-                      className="absolute inset-0 pointer-events-none border border-blue-400/20 bg-no-repeat transition-opacity duration-150 rounded-xl"
-                      style={zoomStyle}
-                    />
-                  </div>
-                  
-                  {/* Thumbnails */}
-                  <div className="flex gap-2 justify-center">
-                    <button className="h-14 w-14 border-2 border-[#3483FA] rounded-lg p-1.5 bg-white">
-                      <img src={product.image} alt="thumb" className="object-contain h-full w-full" />
-                    </button>
-                    <button className="h-14 w-14 border border-slate-200 rounded-lg p-1.5 bg-white opacity-40 hover:opacity-70 transition-opacity">
-                      <img src={product.image} alt="thumb" className="object-contain h-full w-full filter brightness-95" />
-                    </button>
-                  </div>
-                </div>
+                {(() => {
+                  const productImages = product.images && product.images.length > 0 ? product.images : [product.image];
+                  return (
+                    <div className="w-full md:w-[62%] flex flex-col sm:flex-row gap-4">
+                      {/* Vertical Thumbnails List */}
+                      <div className="flex sm:flex-col gap-2 order-2 sm:order-1 justify-center sm:justify-start">
+                        {productImages.map((imgUrl: string, idx: number) => (
+                          <button
+                            key={idx}
+                            onClick={() => {
+                              setActiveImage(imgUrl);
+                              setGalleryIndex(idx);
+                            }}
+                            className={`h-14 w-14 border-2 rounded-xl p-1 bg-white transition-all cursor-pointer overflow-hidden flex items-center justify-center flex-shrink-0 ${
+                              activeImage === imgUrl ? 'border-[#3483FA]' : 'border-slate-200 hover:border-slate-350'
+                            }`}
+                          >
+                            <img src={imgUrl} alt={`thumb-${idx}`} className="object-contain max-h-full max-w-full" />
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Main Display Image */}
+                      <div className="flex-grow order-1 sm:order-2 flex flex-col gap-4">
+                        <div 
+                          className="relative h-[400px] w-full border border-slate-200/60 rounded-2xl bg-white p-4 flex items-center justify-center cursor-zoom-in overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.01)]"
+                          onMouseMove={handleMouseMove}
+                          onMouseLeave={handleMouseLeave}
+                          onClick={() => setIsGalleryOpen(true)}
+                        >
+                          <img
+                            ref={imageRef}
+                            src={activeImage || product.image}
+                            alt={product.title}
+                            className="object-contain max-h-full max-w-full"
+                          />
+                          <div 
+                            className="absolute inset-0 pointer-events-none border border-blue-400/20 bg-no-repeat transition-opacity duration-150 rounded-xl"
+                            style={zoomStyle}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
 
                 {/* Specs Summary */}
                 <div className="flex-grow flex flex-col">
@@ -449,6 +481,81 @@ export default function ProductDetailPage() {
       </main>
 
       <Footer />
+
+      {/* Fullscreen Zoom Gallery Modal */}
+      {isGalleryOpen && (() => {
+        const productImages = product.images && product.images.length > 0 ? product.images : [product.image];
+        return (
+          <div className="fixed inset-0 bg-black/90 z-[999] flex flex-col justify-between p-4 sm:p-6 animate-fadeIn animate-duration-200">
+            {/* Header */}
+            <div className="flex items-center justify-between text-white border-b border-white/10 pb-4">
+              <span className="text-xs font-bold uppercase tracking-widest text-slate-400">
+                Galería - {galleryIndex + 1} de {productImages.length}
+              </span>
+              <button
+                onClick={() => setIsGalleryOpen(false)}
+                className="text-white hover:text-slate-300 font-bold text-xs px-3 py-1.5 bg-white/10 rounded-lg transition-colors cursor-pointer border-0"
+              >
+                Cerrar (Esc)
+              </button>
+            </div>
+
+            {/* Body: Slideshow */}
+            <div className="flex-grow flex items-center justify-between gap-4 max-w-5xl mx-auto w-full relative">
+              {/* Prev Button */}
+              <button
+                onClick={() => {
+                  const nextIdx = (galleryIndex - 1 + productImages.length) % productImages.length;
+                  setGalleryIndex(nextIdx);
+                  setActiveImage(productImages[nextIdx]);
+                }}
+                className="h-12 w-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors cursor-pointer select-none border-0 text-xl"
+              >
+                &#x276E;
+              </button>
+
+              {/* Main Fullscreen Image */}
+              <div className="flex-grow h-[65vh] flex items-center justify-center p-4">
+                <img
+                  src={productImages[galleryIndex]}
+                  alt={`gallery-${galleryIndex}`}
+                  className="object-contain max-h-full max-w-full rounded-lg shadow-2xl transition-all duration-300 transform scale-100 hover:scale-102"
+                />
+              </div>
+
+              {/* Next Button */}
+              <button
+                onClick={() => {
+                  const nextIdx = (galleryIndex + 1) % productImages.length;
+                  setGalleryIndex(nextIdx);
+                  setActiveImage(productImages[nextIdx]);
+                }}
+                className="h-12 w-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors cursor-pointer select-none border-0 text-xl"
+              >
+                &#x276F;
+              </button>
+            </div>
+
+            {/* Footer: Thumbnails navigation */}
+            <div className="flex justify-center gap-2 border-t border-white/10 pt-4 overflow-x-auto max-w-md mx-auto w-full">
+              {productImages.map((imgUrl: string, idx: number) => (
+                <button
+                  key={idx}
+                  onClick={() => {
+                    setGalleryIndex(idx);
+                    setActiveImage(imgUrl);
+                  }}
+                  className={`h-12 w-12 rounded-lg p-0.5 bg-white overflow-hidden transition-all flex-shrink-0 flex items-center justify-center border-0 cursor-pointer ${
+                    galleryIndex === idx ? 'ring-2 ring-[#3483FA]' : 'opacity-40 hover:opacity-80'
+                  }`}
+                >
+                  <img src={imgUrl} alt="thumb" className="object-contain max-h-full max-w-full" />
+                </button>
+              ))}
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }

@@ -10,6 +10,8 @@ interface AppContextType {
   logout: () => void;
   products: Product[];
   addProduct: (product: Omit<Product, 'id' | 'rating' | 'reviewsCount' | 'questions' | 'sellerRating'>) => void;
+  updateProduct: (productId: string, updatedData: Partial<Product>) => void;
+  deleteProduct: (productId: string) => void;
   cart: CartItem[];
   addToCart: (product: Product, quantity?: number) => void;
   removeFromCart: (productId: string) => void;
@@ -22,6 +24,10 @@ interface AppContextType {
   favorites: string[]; // Product IDs
   toggleFavorite: (productId: string) => void;
   isFavorite: (productId: string) => boolean;
+  comparisonList: string[]; // Product IDs (max 3)
+  toggleComparison: (productId: string) => void;
+  isInComparison: (productId: string) => boolean;
+  clearComparison: () => void;
   isMounted: boolean;
 }
 
@@ -38,6 +44,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [cart, setCart] = useState<CartItem[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [comparisonList, setComparisonList] = useState<string[]>([]);
 
   // Load state from localStorage on mount
   useEffect(() => {
@@ -48,6 +55,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const savedCart = localStorage.getItem('ml_cart');
     const savedOrders = localStorage.getItem('ml_orders');
     const savedFavorites = localStorage.getItem('ml_favorites');
+    const savedComparison = localStorage.getItem('ml_comparison');
 
     if (savedUser) setUser(JSON.parse(savedUser));
     if (savedProducts) {
@@ -57,6 +65,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
     if (savedCart) setCart(JSON.parse(savedCart));
     if (savedFavorites) setFavorites(JSON.parse(savedFavorites));
+    if (savedComparison) setComparisonList(JSON.parse(savedComparison));
     if (savedOrders) {
       setOrders(JSON.parse(savedOrders));
     } else {
@@ -107,6 +116,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (!isMounted) return;
     localStorage.setItem('ml_favorites', JSON.stringify(favorites));
   }, [favorites, isMounted]);
+
+  useEffect(() => {
+    if (!isMounted) return;
+    localStorage.setItem('ml_comparison', JSON.stringify(comparisonList));
+  }, [comparisonList, isMounted]);
 
   const login = () => {
     setUser({
@@ -260,6 +274,42 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return favorites.includes(productId);
   };
 
+  // Product CRUD logic
+  const updateProduct = (productId: string, updatedData: Partial<Product>) => {
+    setProducts((prev) =>
+      prev.map((p) => (p.id === productId ? { ...p, ...updatedData } : p))
+    );
+  };
+
+  const deleteProduct = (productId: string) => {
+    setProducts((prev) => prev.filter((p) => p.id !== productId));
+    setCart((prev) => prev.filter((item) => item.product.id !== productId));
+    setFavorites((prev) => prev.filter((id) => id !== productId));
+    setComparisonList((prev) => prev.filter((id) => id !== productId));
+  };
+
+  // Comparison logic
+  const toggleComparison = (productId: string) => {
+    setComparisonList((prev) => {
+      if (prev.includes(productId)) {
+        return prev.filter((id) => id !== productId);
+      }
+      if (prev.length >= 3) {
+        alert('Solo puedes comparar hasta 3 productos simultáneamente.');
+        return prev;
+      }
+      return [...prev, productId];
+    });
+  };
+
+  const isInComparison = (productId: string) => {
+    return comparisonList.includes(productId);
+  };
+
+  const clearComparison = () => {
+    setComparisonList([]);
+  };
+
   const addQuestionToProduct = (productId: string, text: string) => {
     setProducts((prev) =>
       prev.map((prod) => {
@@ -306,6 +356,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         logout,
         products,
         addProduct,
+        updateProduct,
+        deleteProduct,
         cart,
         addToCart,
         removeFromCart,
@@ -318,6 +370,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         favorites,
         toggleFavorite,
         isFavorite,
+        comparisonList,
+        toggleComparison,
+        isInComparison,
+        clearComparison,
         isMounted,
       }}
     >

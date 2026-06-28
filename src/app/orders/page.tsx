@@ -1,15 +1,18 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { useApp } from '@/context/AppContext';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { formatCurrency } from '@/components/ProductCard';
-import { Truck, CheckCircle2, Package, Calendar, MapPin, Zap, ArrowRight, Play, Eye } from 'lucide-react';
+import { Truck, CheckCircle2, Package, Calendar, MapPin, Zap, ArrowRight, Play, Eye, X } from 'lucide-react';
+import { Order } from '@/types';
 
 export default function OrdersPage() {
   const { orders, simulateDeliveryStep, isMounted } = useApp();
+  const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
+  const [selectedInvoiceOrder, setSelectedInvoiceOrder] = useState<Order | null>(null);
 
   if (!isMounted) return null;
 
@@ -44,7 +47,8 @@ export default function OrdersPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#F5F7FA]">
+    <>
+      <div className="flex flex-col min-h-screen bg-[#F5F7FA] print:hidden">
       <Navbar />
 
       <main className="flex-grow pb-16 pt-6">
@@ -80,6 +84,20 @@ export default function OrdersPage() {
                       </div>
                       <div className="flex gap-4 items-center">
                         <span className="font-bold text-slate-700">Total: {formatCurrency(order.total)}</span>
+                        
+                        {/* Printable Invoice Button */}
+                        <button
+                          onClick={() => {
+                            setSelectedInvoiceOrder(order);
+                            setIsInvoiceOpen(true);
+                          }}
+                          className="flex items-center gap-1 hover:text-[#3483FA] text-slate-500 transition-colors font-bold text-[10px] cursor-pointer bg-slate-100 hover:bg-slate-200/60 px-2 py-1 rounded border-0"
+                          title="Ver Factura de Compra"
+                        >
+                          <Eye size={11} />
+                          Factura
+                        </button>
+
                         <span className={`px-2.5 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider ${
                           isDelivered 
                             ? 'bg-[#EBF7EE] text-[#00A650] border border-green-200' 
@@ -245,5 +263,136 @@ export default function OrdersPage() {
 
       <Footer />
     </div>
-  );
+
+    {/* Invoice modal outside wrapper for clean printing */}
+    {isInvoiceOpen && selectedInvoiceOrder && (
+      <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-[999] flex items-center justify-center p-4 overflow-y-auto print:fixed print:inset-0 print:bg-white print:p-0 print:z-[9999] animate-fadeIn animate-duration-200">
+        <div className="bg-white rounded-3xl w-full max-w-[650px] shadow-2xl p-6 md:p-8 flex flex-col gap-6 print:rounded-none print:shadow-none print:p-0 print:max-w-none print:w-full print:h-full">
+          
+          {/* Header / Actions (Hidden on print) */}
+          <div className="flex items-center justify-between border-b border-slate-100 pb-4 print:hidden">
+            <span className="text-xs font-bold uppercase tracking-widest text-slate-400">Factura de Compra</span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => window.print()}
+                className="bg-[#3483FA] hover:bg-[#2c6fd1] text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-sm transition-all cursor-pointer border-0"
+              >
+                Imprimir Factura
+              </button>
+              <button
+                onClick={() => setIsInvoiceOpen(false)}
+                className="h-8 w-8 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-450 hover:text-slate-700 transition-colors border-0 cursor-pointer"
+              >
+                <X size={18} />
+              </button>
+            </div>
+          </div>
+
+          {/* Printable Invoice Sheet */}
+          <div className="flex flex-col gap-6 font-sans text-slate-800">
+            {/* Top info grid */}
+            <div className="flex justify-between border-b border-slate-200 pb-6 items-start">
+              {/* Logo & Company info */}
+              <div>
+                <h2 className="font-black text-xl italic text-slate-900 tracking-tighter leading-none">
+                  mercado<span className="text-[#3483FA] not-italic">libre</span>
+                </h2>
+                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">pro e-commerce</p>
+                <p className="text-[10px] text-slate-400 mt-2.5">MercadoLibre Pro S.R.L.</p>
+                <p className="text-[10px] text-slate-450">Av. Caseros 3039, Parque Patricios, CABA</p>
+                <p className="text-[10px] text-slate-450">CUIT: 30-70304910-9</p>
+                <p className="text-[10px] text-slate-450">IVA Responsable Inscripto</p>
+              </div>
+
+              {/* Invoice Meta */}
+              <div className="text-right">
+                <div className="inline-block border-2 border-slate-900 px-3 py-1 font-black text-lg text-slate-905 mb-2 leading-none">
+                  B
+                </div>
+                <p className="text-[11px] font-extrabold text-slate-800 uppercase tracking-wide">FACTURA DE COMPRA</p>
+                <p className="text-[10px] text-slate-450 mt-1">Nº 0005-00084729</p>
+                <p className="text-[10px] text-slate-450">Fecha: {new Date(selectedInvoiceOrder.date).toLocaleDateString('es-AR')}</p>
+                <p className="text-[10px] text-slate-450">CUIT País: 30-70304910-9</p>
+              </div>
+            </div>
+
+            {/* Client & Billing Info */}
+            <div className="grid grid-cols-2 justify-between border-b border-slate-100 pb-5 text-[10px]">
+              <div>
+                <p className="font-bold text-slate-400 uppercase tracking-wider mb-1.5">Cliente</p>
+                <p className="font-extrabold text-slate-850 text-xs">Agustin Pollan</p>
+                <p className="text-slate-500 mt-0.5">Domicilio: {selectedInvoiceOrder.address}</p>
+                <p className="text-slate-500">Condición frente al IVA: Consumidor Final</p>
+              </div>
+              <div className="text-right">
+                <p className="font-bold text-slate-400 uppercase tracking-wider mb-1.5">Pago y Envío</p>
+                <p className="text-slate-500"><span className="font-semibold text-slate-700">Método:</span> {selectedInvoiceOrder.paymentMethod}</p>
+                <p className="text-slate-500 mt-0.5"><span className="font-semibold text-slate-700">Logística:</span> Mercado Envíos Express</p>
+              </div>
+            </div>
+
+            {/* Items Table */}
+            <table className="w-full text-left text-[10px] border-collapse">
+              <thead>
+                <tr className="border-b border-slate-200 text-slate-400 font-bold uppercase tracking-wider text-[9px] bg-slate-50/50">
+                  <th className="py-2.5 px-3">Detalle del Producto</th>
+                  <th className="py-2.5 px-3 text-center">Cant.</th>
+                  <th className="py-2.5 px-3 text-right">Unitario</th>
+                  <th className="py-2.5 px-3 text-right">Importe</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {selectedInvoiceOrder.items.map((item) => (
+                  <tr key={item.product.id} className="text-slate-700">
+                    <td className="py-3 px-3">
+                      <span className="font-bold text-slate-850">{item.product.title}</span>
+                      <span className="block text-[8px] text-slate-400 mt-0.5">Categoría: {item.product.category}</span>
+                    </td>
+                    <td className="py-3 px-3 text-center font-bold">{item.quantity}</td>
+                    <td className="py-3 px-3 text-right">{formatCurrency(item.product.price)}</td>
+                    <td className="py-3 px-3 text-right font-bold">{formatCurrency(item.product.price * item.quantity)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            {/* Totals Breakdown */}
+            <div className="flex flex-col items-end gap-1.5 border-t border-slate-200 pt-5 mt-3">
+              <div className="flex justify-between w-[200px] text-[10px] text-slate-400">
+                <span>Subtotal Neto:</span>
+                <span>{formatCurrency(selectedInvoiceOrder.total / 1.21)}</span>
+              </div>
+              <div className="flex justify-between w-[200px] text-[10px] text-slate-400">
+                <span>Alícuota IVA (21%):</span>
+                <span>{formatCurrency(selectedInvoiceOrder.total - (selectedInvoiceOrder.total / 1.21))}</span>
+              </div>
+              <div className="flex justify-between w-[200px] text-xs font-black text-slate-900 border-t border-slate-100 pt-2 mt-1">
+                <span>Total Facturado:</span>
+                <span>{formatCurrency(selectedInvoiceOrder.total)}</span>
+              </div>
+            </div>
+
+            {/* Barcode & Signature */}
+            <div className="flex justify-between items-center border-t border-slate-100 pt-5 mt-5">
+              <div>
+                {/* Mock Barcode */}
+                <div className="h-6 w-48 bg-slate-50 border-r border-l border-slate-350 flex items-center justify-between px-2 font-mono text-[7px] text-slate-400 tracking-[3px] select-none">
+                  ||||| | |||| ||| || | ||||| | ||
+                </div>
+                <span className="text-[7px] text-slate-400 block mt-1 tracking-wider text-center w-48 font-semibold">
+                  (01)077983049109(10)000500084729
+                </span>
+              </div>
+              <div className="text-right text-[8px] text-slate-400 italic">
+                CAE Nº: 74258903429185<br />
+                Vencimiento CAE: {new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toLocaleDateString('es-AR')}
+              </div>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+    )}
+  </>
+);
 }

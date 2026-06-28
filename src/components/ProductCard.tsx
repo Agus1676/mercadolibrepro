@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Product } from '@/types';
-import { Zap, Star, Heart } from 'lucide-react';
+import { Zap, Star, Heart, GitCompare } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
 
 interface ProductCardProps {
@@ -20,14 +20,21 @@ export const formatCurrency = (val: number) => {
 };
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
-  const { toggleFavorite, isFavorite } = useApp();
+  const { toggleFavorite, isFavorite, toggleComparison, isInComparison } = useApp();
   const favorited = isFavorite(product.id);
+  const compared = isInComparison(product.id);
   const installmentAmount = Math.round(product.price / 6);
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     toggleFavorite(product.id);
+  };
+
+  const handleComparisonClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleComparison(product.id);
   };
 
   return (
@@ -43,6 +50,20 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           className="object-contain max-h-full max-w-full group-hover:scale-102 transition-transform duration-300"
         />
         
+        {/* Comparison Checkbox Button */}
+        <button
+          onClick={handleComparisonClick}
+          className={`absolute top-2.5 left-2.5 p-1.5 rounded-full border transition-all hover:scale-110 shadow-sm z-10 flex items-center justify-center cursor-pointer ${
+            compared
+              ? 'bg-blue-50/95 border-blue-200 text-[#3483FA]'
+              : 'bg-white/95 border-slate-100 text-slate-400 hover:text-[#3483FA]'
+          }`}
+          aria-label={compared ? "Quitar de comparación" : "Comparar producto"}
+          title={compared ? "Quitar de comparación" : "Comparar producto"}
+        >
+          <GitCompare size={14} className="active:scale-95 duration-205" />
+        </button>
+
         {/* Favorite Heart Button */}
         <button
           onClick={handleFavoriteClick}

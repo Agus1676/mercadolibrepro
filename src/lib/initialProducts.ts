@@ -27,6 +27,11 @@ CONTENIDO DE LA CAJA:
 - Documentación oficial`,
     category: 'Celulares',
     image: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=800&h=800&fit=crop&q=80',
+    images: [
+      'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=800&h=800&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1616348436168-de43ad0db179?w=800&h=800&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=800&h=800&fit=crop&q=80'
+    ],
     rating: 4.8,
     reviewsCount: 1420,
     stock: 14,
@@ -74,6 +79,11 @@ CONTENIDO DE LA CAJA:
 - Cable de USB-C a MagSafe 3 (2 m)`,
     category: 'Computación',
     image: 'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=800&h=800&fit=crop&q=80',
+    images: [
+      'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=800&h=800&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&h=800&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1496181130204-7552cc14ac1a?w=800&h=800&fit=crop&q=80'
+    ],
     rating: 4.9,
     reviewsCount: 32,
     stock: 4,
@@ -116,6 +126,11 @@ CONTENIDO DE LA CAJA:
 - Cable USB-C para carga`,
     category: 'Audio',
     image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=800&fit=crop&q=80',
+    images: [
+      'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=800&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=800&h=800&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?w=800&h=800&fit=crop&q=80'
+    ],
     rating: 4.9,
     reviewsCount: 345,
     stock: 22,
@@ -158,6 +173,11 @@ CONTENIDO DE LA CAJA:
 - Cable USB`,
     category: 'Consolas',
     image: 'https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=800&h=800&fit=crop&q=80',
+    images: [
+      'https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=800&h=800&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=800&h=800&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=800&fit=crop&q=80'
+    ],
     rating: 4.8,
     reviewsCount: 562,
     stock: 9,
@@ -191,6 +211,11 @@ CONTENIDO DE LA CAJA:
 - Base de soporte`,
     category: 'Televisores',
     image: 'https://images.unsplash.com/photo-1593784991095-a205069470b6?w=800&h=800&fit=crop&q=80',
+    images: [
+      'https://images.unsplash.com/photo-1593784991095-a205069470b6?w=800&h=800&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1558882224-cca166733360?w=800&h=800&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1601524909162-be87252be298?w=800&h=800&fit=crop&q=80'
+    ],
     rating: 4.9,
     reviewsCount: 204,
     stock: 3,
@@ -224,6 +249,11 @@ CONTENIDO DE LA CAJA:
 - Switches de repuesto`,
     category: 'Computación',
     image: 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=800&h=800&fit=crop&q=80',
+    images: [
+      'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=800&h=800&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?w=800&h=800&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1595225476474-87563907a212?w=800&h=800&fit=crop&q=80'
+    ],
     rating: 5.0,
     reviewsCount: 15,
     stock: 2,
