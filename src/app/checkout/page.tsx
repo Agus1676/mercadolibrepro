@@ -32,7 +32,26 @@ export default function CheckoutPage() {
     }
   }, [cart, isMounted, router, isSuccess]);
 
-  if (!isMounted) return null;
+  if (!isMounted) {
+    return (
+      <div className="flex flex-col min-h-screen bg-[#F5F7FA]">
+        <Navbar />
+        <main className="flex-grow pb-16 pt-6">
+          <div className="max-w-[900px] mx-auto px-4 animate-pulse">
+            <div className="h-6 w-56 bg-slate-250 rounded mb-6"></div>
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+              <div className="md:col-span-7 flex flex-col gap-6">
+                <div className="h-[190px] w-[320px] bg-slate-100 rounded-2xl mx-auto"></div>
+                <div className="h-[250px] bg-white border border-slate-200 rounded-2xl"></div>
+              </div>
+              <div className="md:col-span-5 h-[200px] bg-white border border-slate-200 rounded-2xl"></div>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   const detectCardType = (number: string) => {
     const cleaned = number.replace(/\s+/g, '');

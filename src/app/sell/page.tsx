@@ -60,7 +60,32 @@ export default function SellPage() {
   // Alert feedback state
   const [alertMsg, setAlertMsg] = useState<{ type: 'success' | 'info'; text: string } | null>(null);
 
-  if (!isMounted) return null;
+  if (!isMounted) {
+    return (
+      <div className="flex flex-col min-h-screen bg-[#F5F7FA]">
+        <Navbar />
+        <main className="flex-grow pb-16 pt-6">
+          <div className="max-w-[1200px] mx-auto px-4 animate-pulse">
+            <div className="flex justify-between items-center mb-6">
+              <div className="flex flex-col gap-2">
+                <div className="h-7 w-48 bg-slate-250 rounded"></div>
+                <div className="h-4 w-64 bg-slate-250 rounded"></div>
+              </div>
+              <div className="h-10 w-44 bg-slate-250 rounded-xl"></div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
+              {Array.from({ length: 3 }).map((_, idx) => (
+                <div key={idx} className="bg-white border border-slate-200 rounded-3xl h-24 p-5"></div>
+              ))}
+            </div>
+            <div className="bg-white border border-slate-200 rounded-3xl h-[220px] p-6 mb-6"></div>
+            <div className="bg-white border border-slate-200 rounded-3xl h-[300px]"></div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   const triggerAlert = (type: 'success' | 'info', text: string) => {
     setAlertMsg({ type, text });

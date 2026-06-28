@@ -11,7 +11,34 @@ import Link from 'next/link';
 export default function FavoritesPage() {
   const { products, favorites, isMounted } = useApp();
 
-  if (!isMounted) return null;
+  if (!isMounted) {
+    return (
+      <div className="flex flex-col min-h-screen bg-[#F5F7FA]">
+        <Navbar />
+        <main className="flex-grow pb-16 pt-6">
+          <div className="max-w-[1200px] mx-auto px-4">
+            <div className="h-4 w-32 bg-slate-250 rounded animate-pulse mb-6"></div>
+            <div className="flex flex-col gap-6">
+              <div>
+                <div className="h-8 w-48 bg-slate-250 rounded animate-pulse"></div>
+                <div className="h-4 w-32 bg-slate-250 rounded animate-pulse mt-2"></div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                {Array.from({ length: 4 }).map((_, idx) => (
+                  <div key={idx} className="bg-white rounded-2xl p-4 h-[350px] border border-slate-200/60 animate-pulse flex flex-col gap-4">
+                    <div className="h-[200px] w-full bg-slate-100 rounded-xl"></div>
+                    <div className="h-4 bg-slate-100 rounded w-3/4"></div>
+                    <div className="h-4 bg-slate-100 rounded w-1/2"></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   const favoritedProducts = products.filter((p) => favorites.includes(p.id));
 

@@ -14,7 +14,33 @@ export default function OrdersPage() {
   const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
   const [selectedInvoiceOrder, setSelectedInvoiceOrder] = useState<Order | null>(null);
 
-  if (!isMounted) return null;
+  if (!isMounted) {
+    return (
+      <div className="flex flex-col min-h-screen bg-[#F5F7FA]">
+        <Navbar />
+        <main className="flex-grow pb-16 pt-6">
+          <div className="max-w-[1000px] mx-auto px-4 animate-pulse">
+            <div className="h-7 w-40 bg-slate-250 rounded mb-6"></div>
+            <div className="flex flex-col gap-6">
+              {Array.from({ length: 2 }).map((_, idx) => (
+                <div key={idx} className="bg-white border border-slate-200 rounded-2xl h-[240px] p-5 flex flex-col gap-4">
+                  <div className="h-10 bg-slate-100 rounded w-full"></div>
+                  <div className="flex gap-4 items-center mt-2">
+                    <div className="h-12 w-12 bg-slate-100 rounded-lg"></div>
+                    <div className="flex-grow flex flex-col gap-2">
+                      <div className="h-4 bg-slate-100 rounded w-1/3"></div>
+                      <div className="h-3 bg-slate-100 rounded w-1/4"></div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   const getTruckPosition = (step: number) => {
     switch (step) {

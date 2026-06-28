@@ -50,7 +50,32 @@ export default function ProductDetailPage() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  if (!isMounted) return null;
+  if (!isMounted) {
+    return (
+      <div className="flex flex-col min-h-screen bg-[#F5F7FA]">
+        <Navbar />
+        <main className="flex-grow pb-16 pt-6">
+          <div className="max-w-[1200px] mx-auto px-4">
+            <div className="h-4 w-48 bg-slate-250 rounded animate-pulse mb-4"></div>
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8 animate-pulse">
+              <div className="lg:col-span-8 flex flex-col gap-6">
+                <div className="flex flex-col md:flex-row gap-6">
+                  <div className="w-full md:w-[62%] h-[400px] bg-slate-100 rounded-2xl"></div>
+                  <div className="flex-grow flex flex-col gap-3">
+                    <div className="h-3 bg-slate-250 rounded w-1/4"></div>
+                    <div className="h-6 bg-slate-250 rounded w-3/4"></div>
+                    <div className="h-4 bg-slate-250 rounded w-1/2 mt-2"></div>
+                  </div>
+                </div>
+              </div>
+              <div className="lg:col-span-4 h-[300px] bg-slate-50 rounded-2xl border border-slate-150"></div>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!product) {
     return (
